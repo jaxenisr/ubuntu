@@ -703,10 +703,17 @@ List<dynamic> parseSearchResults(List<dynamic> results,
     List<String> searchResultTypes, String? resultType, String category) {
   return results
       .map((result) {
-        return parseSearchResult(result['musicResponsiveListItemRenderer'],
-            searchResultTypes, resultType, category);
+        if (result['musicResponsiveListItemRenderer'] == null) {
+          return null;
+        }
+        try {
+          return parseSearchResult(result['musicResponsiveListItemRenderer'],
+              searchResultTypes, resultType, category);
+        } catch (e) {
+          return null;
+        }
       })
-      .whereType<dynamic>()
+      .where((element) => element != null)
       .toList();
 }
 
@@ -735,10 +742,9 @@ dynamic parseSearchResult(Map<String, dynamic> data,
 
   if (resultType == 'artist') {
     searchResult['artist'] = getItemText(data, 0);
-    final list = data['flexColumns'][1]
-        ['musicResponsiveListItemFlexColumnRenderer']['text']['runs'];
-    searchResult['subscribers'] = list.length < 2 ? "" : list[2];
-    ['text'];
+    final flexItem = getFlexColumnItem(data, 1);
+    final list = flexItem.isEmpty ? [] : flexItem['text']['runs'];
+    searchResult['subscribers'] = (list.length < 3) ? "" : list[2]['text'];
     //final x = parseMenuPlaylists(data, searchResult);
   } else if (resultType == 'album') {
     searchResult['type'] = getItemText(data, 1);
