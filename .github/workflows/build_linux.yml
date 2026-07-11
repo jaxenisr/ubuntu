@@ -44,11 +44,11 @@ jobs:
       - name: Install flutter_distributor
         run: |
           dart pub global activate flutter_distributor
-          echo "PATH=\$HOME/.pub-cache/bin:\$PATH" >> $GITHUB_ENV
+          echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
 
       - name: Package Linux AppImage and DEB
         run: |
-          dart pub global run flutter_distributor package --platform linux --targets deb,appimage
+          flutter_distributor package --platform linux --targets deb,appimage
 
       - name: Upload Linux packages
         uses: actions/upload-artifact@v4
