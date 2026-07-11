@@ -38,8 +38,17 @@ jobs:
       - name: Build Linux release
         run: flutter build linux --release
 
-      - name: Upload Linux bundle
+      - name: Install flutter_distributor
+        run: |
+          dart pub global activate flutter_distributor
+          echo "PATH=\$HOME/.pub-cache/bin:\$PATH" >> $GITHUB_ENV
+
+      - name: Package Linux AppImage and DEB
+        run: |
+          flutter_distributor package --platform linux --targets deb,appimage
+
+      - name: Upload Linux packages
         uses: actions/upload-artifact@v4
         with:
-          name: Harmony music linux bundle
-          path: build/linux/x64/release/bundle/**
+          name: Harmony music linux packages
+          path: dist/**/*.{deb,AppImage}
